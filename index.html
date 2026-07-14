@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>สถิติหวยลาวพัฒนา — ย้อนหลัง 10 ปี</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;500;600;700&family=Sarabun:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#141b2e;          /* น้ำเงินเข้มลาว */
+  --panel:#1d2740;
+  --panel2:#243050;
+  --line:#31406a;
+  --gold:#e8b64c;         /* ทองวัด */
+  --gold-soft:#f3d692;
+  --red:#c9394a;          /* แดงธงลาว */
+  --text:#eef1f8;
+  --muted:#8f9ab8;
+  --hot:#e8b64c;
+  --cold:#3a4a75;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--ink);color:var(--text);font-family:'Sarabun',sans-serif;line-height:1.6}
+h1,h2,h3,.num{font-family:'Prompt',sans-serif}
+
+header{border-bottom:1px solid var(--line);padding:28px 24px 22px;background:
+  radial-gradient(900px 300px at 15% -50%, rgba(232,182,76,.14), transparent 65%), var(--ink)}
+.wrap{max-width:1080px;margin:0 auto}
+.brand{display:flex;align-items:center;gap:14px}
+.moon{width:46px;height:46px;border-radius:50%;background:conic-gradient(var(--gold) 0 50%, var(--red) 50% 100%);
+  display:flex;align-items:center;justify-content:center;color:var(--ink);font-family:'Prompt';font-weight:700;font-size:15px;
+  box-shadow:0 0 0 3px rgba(232,182,76,.25)}
+h1{font-size:24px;font-weight:600}
+h1 span{color:var(--gold)}
+.sub{color:var(--muted);font-size:14px;margin-top:2px}
+
+.latest{margin-top:20px;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px 20px;
+  display:flex;flex-wrap:wrap;align-items:center;gap:18px}
+.latest .lbl{font-size:13px;color:var(--muted)}
+.latest .date{font-family:'Prompt';font-weight:500;font-size:15px}
+.balls{display:flex;gap:8px}
+.ball{width:44px;height:44px;border-radius:50%;background:var(--gold);color:var(--ink);
+  display:flex;align-items:center;justify-content:center;font-family:'Prompt';font-weight:700;font-size:20px}
+.derived{display:flex;gap:16px;font-size:14px;color:var(--muted)}
+.derived b{color:var(--gold-soft);font-family:'Prompt';font-size:17px;margin-left:6px}
+
+main{max-width:1080px;margin:0 auto;padding:26px 24px 60px}
+
+.controls{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:26px}
+.controls .lbl{font-size:14px;color:var(--muted);margin-right:4px}
+.chip{border:1px solid var(--line);background:var(--panel);color:var(--text);padding:8px 18px;border-radius:999px;
+  font-family:'Prompt';font-size:14px;cursor:pointer;transition:.15s}
+.chip:hover{border-color:var(--gold)}
+.chip.on{background:var(--gold);color:var(--ink);border-color:var(--gold);font-weight:600}
+.meta{margin-left:auto;font-size:13px;color:var(--muted)}
+
+section{margin-bottom:36px}
+.sec-head{display:flex;align-items:baseline;gap:12px;margin-bottom:14px;border-left:4px solid var(--gold);padding-left:12px}
+h2{font-size:19px;font-weight:600}
+.sec-head small{color:var(--muted);font-size:13px}
+
+.tabs{display:flex;gap:0;margin-bottom:16px;border:1px solid var(--line);border-radius:10px;overflow:hidden;width:fit-content}
+.tab{padding:9px 24px;background:var(--panel);cursor:pointer;font-family:'Prompt';font-size:14px;color:var(--muted)}
+.tab.on{background:var(--panel2);color:var(--gold);font-weight:600}
+
+.grid2{display:grid;grid-template-columns:1.2fr .8fr;gap:20px}
+@media(max-width:820px){.grid2{grid-template-columns:1fr}.meta{margin-left:0;width:100%}}
+
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px}
+.card h3{font-size:15px;font-weight:500;color:var(--gold-soft);margin-bottom:14px}
+
+/* heatmap 00-99 */
+.heat{display:grid;grid-template-columns:repeat(10,1fr);gap:4px}
+.cell{aspect-ratio:1;border-radius:6px;display:flex;align-items:center;justify-content:center;
+  font-family:'Prompt';font-size:11px;font-weight:500;cursor:default;position:relative}
+.cell:hover::after{content:attr(data-tip);position:absolute;bottom:110%;left:50%;transform:translateX(-50%);
+  background:#000;color:#fff;font-size:11px;padding:4px 8px;border-radius:6px;white-space:nowrap;z-index:5}
+.legend{display:flex;align-items:center;gap:8px;margin-top:12px;font-size:12px;color:var(--muted)}
+.lg-bar{flex:1;height:8px;border-radius:4px;background:linear-gradient(90deg,var(--cold),var(--gold))}
+
+/* ranking bars */
+.rank{display:flex;flex-direction:column;gap:9px}
+.rrow{display:grid;grid-template-columns:34px 52px 1fr 46px;align-items:center;gap:10px;font-size:14px}
+.rrow .pos{color:var(--muted);font-family:'Prompt';font-size:13px}
+.rrow .n{font-family:'Prompt';font-weight:700;font-size:17px;color:var(--gold-soft);letter-spacing:1px}
+.bar{height:12px;border-radius:6px;background:linear-gradient(90deg,var(--gold),var(--red));min-width:6px}
+.rrow .c{text-align:right;color:var(--muted);font-size:13px}
+
+.cold-list{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}
+.cold-pill{border:1px dashed var(--line);border-radius:8px;padding:6px 12px;font-size:13px;color:var(--muted)}
+.cold-pill b{font-family:'Prompt';color:var(--text);font-size:15px;margin-right:6px}
+
+/* doubles */
+.dgrid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+@media(max-width:480px){.dgrid{grid-template-columns:repeat(3,1fr)}}
+.dtile{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:10px 8px;text-align:center}
+.dtile .dn{font-family:'Prompt';font-weight:700;font-size:20px;color:var(--gold-soft);letter-spacing:2px}
+.dtile .dc{font-size:12px;color:var(--muted);margin-top:2px}
+.dtile .dbar{height:5px;border-radius:3px;background:var(--line);margin-top:8px;overflow:hidden}
+.dtile .dbar i{display:block;height:100%;background:linear-gradient(90deg,var(--gold),var(--red))}
+.dtile.top{border-color:var(--gold)}
+.tri-stats{display:flex;flex-direction:column;gap:10px;font-size:14px}
+.tri-row{display:flex;justify-content:space-between;align-items:baseline;border-bottom:1px dashed var(--line);padding-bottom:8px}
+.tri-row b{font-family:'Prompt';font-size:18px;color:var(--gold-soft)}
+.tri-row span{color:var(--muted)}
+
+/* prediction */
+.predict{background:linear-gradient(135deg,var(--panel) 0%, #2a2438 100%);border:1px solid var(--gold);border-radius:14px;padding:22px}
+.pset{display:flex;flex-wrap:wrap;gap:26px;margin-top:14px}
+.pcol .plbl{font-size:13px;color:var(--muted);margin-bottom:8px}
+.pnums{display:flex;gap:8px}
+.pn{background:var(--ink);border:1px solid var(--gold);color:var(--gold);border-radius:10px;
+  padding:8px 14px;font-family:'Prompt';font-weight:700;font-size:19px;letter-spacing:1px}
+.disclaimer{margin-top:16px;font-size:13px;color:var(--muted);border-top:1px dashed var(--line);padding-top:12px}
+.disclaimer b{color:var(--red);font-weight:600}
+
+footer{border-top:1px solid var(--line);padding:18px 24px;text-align:center;color:var(--muted);font-size:12px}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <div class="brand">
+      <div class="moon">ລ</div>
+      <div>
+        <h1>สถิติหวยลาว<span>พัฒนา</span></h1>
+        <div class="sub">ข้อมูลย้อนหลัง 10 ปี · อัปเดตทุกงวด จันทร์ / พุธ / ศุกร์ (ตัวอย่างใช้ข้อมูลจำลอง)</div>
+      </div>
+    </div>
+    <div class="latest">
+      <div>
+        <div class="lbl">ผลงวดล่าสุด</div>
+        <div class="date" id="latestDate">—</div>
+      </div>
+      <div class="balls" id="latestBalls"></div>
+      <div class="derived">
+        <span>3 ตัวบน<b id="d3"></b></span>
+        <span>2 ตัวบน<b id="d2t"></b></span>
+        <span>2 ตัวล่าง<b id="d2b"></b></span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="controls">
+    <span class="lbl">ดูสถิติย้อนหลัง:</span>
+    <button class="chip" data-y="1">1 ปี</button>
+    <button class="chip" data-y="3">3 ปี</button>
+    <button class="chip on" data-y="5">5 ปี</button>
+    <button class="chip" data-y="10">10 ปี</button>
+    <span class="meta" id="metaTxt"></span>
+  </div>
+
+  <section>
+    <div class="sec-head"><h2>เลขที่ออกบ่อยที่สุด</h2><small>นับจาก 2 ตัวบน + 2 ตัวล่าง และ 3 ตัวบน</small></div>
+    <div class="tabs">
+      <div class="tab on" data-mode="2">เลข 2 หลัก</div>
+      <div class="tab" data-mode="3">เลข 3 หลัก</div>
+    </div>
+
+    <div class="grid2">
+      <div class="card" id="heatCard">
+        <h3>แผนที่ความถี่ เลข 00–99</h3>
+        <div class="heat" id="heat"></div>
+        <div class="legend"><span>ออกน้อย</span><div class="lg-bar"></div><span>ออกบ่อย</span></div>
+      </div>
+      <div>
+        <div class="card" style="margin-bottom:16px">
+          <h3 id="rankTitle">อันดับเลขออกบ่อย TOP 10</h3>
+          <div class="rank" id="rank"></div>
+        </div>
+        <div class="card">
+          <h3>เลขที่หายไปนานที่สุด (เลขค้าง)</h3>
+          <div class="cold-list" id="coldList"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head"><h2>สถิติเลขเบิ้ล</h2><small>เลขซ้ำใน 2 ตัว (00–99) และเบิ้ล/ตองใน 3 ตัวบน</small></div>
+    <div class="grid2">
+      <div class="card">
+        <h3>ความถี่เลขเบิ้ล 2 หลัก (00, 11, … 99)</h3>
+        <div class="dgrid" id="dblGrid"></div>
+        <div class="legend" id="dblSummary" style="margin-top:14px"></div>
+      </div>
+      <div class="card">
+        <h3>เบิ้ล / ตอง ใน 3 ตัวบน</h3>
+        <div class="tri-stats" id="triStats"></div>
+        <h3 style="margin-top:18px">ตองที่เคยออก (000–999)</h3>
+        <div class="cold-list" id="tripleList"></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head"><h2>เลขเด่นงวดต่อไป (จากสถิติ)</h2><small>งวดวันศุกร์ที่ 17 ก.ค. 2569</small></div>
+    <div class="predict">
+      <div style="font-size:14px;color:var(--muted)">คำนวณจากความถี่ในช่วงที่เลือก + เลขค้างนาน + แนวโน้มเลขเด่นรายเดือน</div>
+      <div class="pset">
+        <div class="pcol"><div class="plbl">2 ตัวเด่น</div><div class="pnums" id="p2"></div></div>
+        <div class="pcol"><div class="plbl">3 ตัวเด่น</div><div class="pnums" id="p3"></div></div>
+        <div class="pcol"><div class="plbl">เลขค้างน่าจับตา</div><div class="pnums" id="pc"></div></div>
+      </div>
+      <div class="disclaimer"><b>ข้อควรทราบ:</b> ผลหวยแต่ละงวดเป็นการสุ่มที่เป็นอิสระต่อกัน สถิติย้อนหลังไม่สามารถทำนายผลงวดถัดไปได้จริง ข้อมูลนี้จัดทำเพื่อความบันเทิงเท่านั้น โปรดใช้วิจารณญาณ</div>
+    </div>
+  </section>
+</main>
+
+<footer>ตัวอย่างดีไซน์ — ข้อมูลทั้งหมดในหน้านี้เป็นข้อมูลจำลองเพื่อการออกแบบ</footer>
+
+<script>
+// ---------- โหลดข้อมูลจริงจาก results.json (สร้างด้วย fetch_lao_lottery.py) ----------
+// ถ้าไม่พบไฟล์ / เปิดแบบ file:// จะใช้ข้อมูลจำลองแทนอัตโนมัติ
+// หมายเหตุ: การโหลด results.json ต้องเปิดผ่าน web server เช่น `python -m http.server`
+let draws = [], last = null, end = null;
+
+function mockData(){
+  function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+  const rnd = mulberry32(20260714);
+  const arr = [];
+  const start = new Date(2016,6,15), fin = new Date(2026,6,13);
+  for(let d=new Date(start); d<=fin; d.setDate(d.getDate()+1)){
+    const dow = d.getDay();
+    if(dow===1||dow===3||dow===5){
+      const n4 = String(Math.floor(rnd()*10000)).padStart(4,'0');
+      const low2 = String(Math.floor(rnd()*100)).padStart(2,'0');
+      arr.push({date:new Date(d), n4, top3:n4.slice(1), top2:n4.slice(2), low2});
+    }
+  }
+  return arr;
+}
+
+const thMonths=['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+const fmt=d=>`${d.getDate()} ${thMonths[d.getMonth()]} ${d.getFullYear()+543}`;
+
+async function loadData(){
+  try{
+    const res = await fetch('results.json');
+    if(!res.ok) throw 0;
+    const raw = await res.json();
+    draws = raw.map(r=>({date:new Date(r.date), n4:r.n4, top3:r.top3, top2:r.top2, low2:r.low2||null}))
+               .sort((a,b)=>a.date-b.date);
+    document.querySelector('.sub').textContent =
+      'ข้อมูลจริงจาก results.json · อัปเดตทุกงวด จันทร์ / พุธ / ศุกร์';
+  }catch(e){
+    draws = mockData(); // fallback: ข้อมูลจำลอง
+  }
+  last = draws[draws.length-1];
+  end = last.date;
+  initPage();
+}
+
+function initPage(){
+document.getElementById('latestDate').textContent = 'วัน' + ['อาทิตย์','จันทร์','อังคาร','พุธ','พฤหัสฯ','ศุกร์','เสาร์'][last.date.getDay()] + 'ที่ ' + fmt(last.date);
+document.getElementById('latestBalls').innerHTML = [...last.n4].map(c=>`<div class="ball">${c}</div>`).join('');
+document.getElementById('d3').textContent = last.top3;
+document.getElementById('d2t').textContent = last.top2;
+document.getElementById('d2b').textContent = last.low2 ?? '—';
+
+let years = 5, mode = '2';
+
+function filtered(){
+  const cut = new Date(end); cut.setFullYear(cut.getFullYear()-years);
+  return draws.filter(x=>x.date>=cut);
+}
+
+function render(){
+  const data = filtered();
+  document.getElementById('metaTxt').textContent =
+    `ช่วงข้อมูล: ${fmt(data[0].date)} – ${fmt(last.date)} · รวม ${data.length.toLocaleString()} งวด`;
+
+  // ---- frequency ----
+  const freq2 = new Array(100).fill(0);
+  const freq3 = {};
+  const lastSeen2 = new Array(100).fill(null);
+  data.forEach((x,i)=>{
+    const a=+x.top2;
+    freq2[a]++; lastSeen2[a]=i;
+    if(x.low2!=null){ const b=+x.low2; freq2[b]++; lastSeen2[b]=i; }
+    freq3[x.top3]=(freq3[x.top3]||0)+1;
+  });
+
+  // ---- สถิติเลขเบิ้ล ----
+  // 2 หลัก: นับเฉพาะ 00,11,...,99 จาก freq2
+  const dbl = [];
+  for(let k=0;k<10;k++){ const n=k*11; dbl.push([String(n).padStart(2,'0'), freq2[n]]); }
+  const dmax = Math.max(...dbl.map(x=>x[1]),1);
+  const dTop = Math.max(...dbl.map(x=>x[1]));
+  document.getElementById('dblGrid').innerHTML = dbl.map(([n,c])=>
+    `<div class="dtile${c===dTop?' top':''}"><div class="dn">${n}</div><div class="dc">${c} ครั้ง</div>
+     <div class="dbar"><i style="width:${Math.round(c/dmax*100)}%"></i></div></div>`).join('');
+  const dblTotal = dbl.reduce((s,x)=>s+x[1],0);
+  const twoTotal = freq2.reduce((s,x)=>s+x,0);
+  document.getElementById('dblSummary').textContent =
+    `เลขเบิ้ลออกรวม ${dblTotal} ครั้ง จากทั้งหมด ${twoTotal.toLocaleString()} ครั้ง (${(dblTotal/twoTotal*100).toFixed(1)}% · ค่าเฉลี่ยตามทฤษฎี 10%)`;
+
+  // 3 ตัวบน: เบิ้ล (มีเลขซ้ำ 2 ตัว) และตอง (ซ้ำ 3 ตัว)
+  let pair=0, triple=0; const tripleHits={};
+  data.forEach(x=>{
+    const [a,b,c]=x.top3;
+    if(a===b&&b===c){ triple++; tripleHits[x.top3]=(tripleHits[x.top3]||0)+1; }
+    else if(a===b||b===c||a===c){ pair++; }
+  });
+  document.getElementById('triStats').innerHTML = `
+    <div class="tri-row"><span>งวดที่ 3 ตัวบนมี "เบิ้ล" (เลขซ้ำ 2 ตัว)</span><b>${pair} งวด (${(pair/data.length*100).toFixed(1)}%)</b></div>
+    <div class="tri-row"><span>งวดที่ออก "ตอง" (ซ้ำ 3 ตัว)</span><b>${triple} งวด (${(triple/data.length*100).toFixed(1)}%)</b></div>
+    <div class="tri-row"><span>ค่าเฉลี่ยตามทฤษฎี</span><b style="color:var(--muted);font-size:14px">เบิ้ล 27% · ตอง 1%</b></div>`;
+  const tripleArr = Object.entries(tripleHits).sort((a,b)=>b[1]-a[1]);
+  document.getElementById('tripleList').innerHTML = tripleArr.length
+    ? tripleArr.map(([n,c])=>`<span class="cold-pill"><b>${n}</b>${c} ครั้ง</span>`).join('')
+    : `<span class="cold-pill">ยังไม่เคยออกตองในช่วงที่เลือก</span>`;
+
+  // heatmap (2 หลักเสมอ)
+  const max2=Math.max(...freq2), min2=Math.min(...freq2);
+  document.getElementById('heat').innerHTML = freq2.map((f,n)=>{
+    const t=(f-min2)/(max2-min2||1);
+    const bg=`color-mix(in srgb, var(--gold) ${Math.round(t*85)}%, var(--cold))`;
+    const col=t>.55?'var(--ink)':'var(--muted)';
+    return `<div class="cell" style="background:${bg};color:${col}" data-tip="เลข ${String(n).padStart(2,'0')} ออก ${f} ครั้ง">${String(n).padStart(2,'0')}</div>`;
+  }).join('');
+
+  // ranking
+  let ranked;
+  if(mode==='2'){
+    ranked = freq2.map((c,n)=>[String(n).padStart(2,'0'),c]).sort((a,b)=>b[1]-a[1]).slice(0,10);
+    document.getElementById('rankTitle').textContent='อันดับเลข 2 หลัก ออกบ่อย TOP 10';
+  }else{
+    ranked = Object.entries(freq3).sort((a,b)=>b[1]-a[1]).slice(0,10);
+    document.getElementById('rankTitle').textContent='อันดับเลข 3 หลัก ออกบ่อย TOP 10';
+  }
+  const rmax = ranked[0][1];
+  document.getElementById('rank').innerHTML = ranked.map(([n,c],i)=>
+    `<div class="rrow"><span class="pos">${i+1}.</span><span class="n">${n}</span>
+     <div class="bar" style="width:${Math.round(c/rmax*100)}%"></div><span class="c">${c} ครั้ง</span></div>`).join('');
+
+  // cold numbers (เลขค้าง 2 หลัก)
+  const cold = lastSeen2.map((idx,n)=>[n, idx===null?data.length:(data.length-1-idx)])
+    .sort((a,b)=>b[1]-a[1]).slice(0,8);
+  document.getElementById('coldList').innerHTML = cold.map(([n,g])=>
+    `<span class="cold-pill"><b>${String(n).padStart(2,'0')}</b>ไม่ออก ${g} งวด</span>`).join('');
+
+  // "prediction" = top hot + top cold
+  const hot2 = ranked === null ? [] : freq2.map((c,n)=>[String(n).padStart(2,'0'),c]).sort((a,b)=>b[1]-a[1]);
+  document.getElementById('p2').innerHTML = hot2.slice(0,3).map(x=>`<span class="pn">${x[0]}</span>`).join('');
+  const hot3 = Object.entries(freq3).sort((a,b)=>b[1]-a[1]).slice(0,2);
+  document.getElementById('p3').innerHTML = hot3.map(x=>`<span class="pn">${x[0]}</span>`).join('');
+  document.getElementById('pc').innerHTML = cold.slice(0,2).map(x=>`<span class="pn">${String(x[0]).padStart(2,'0')}</span>`).join('');
+}
+
+document.querySelectorAll('.chip').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('.chip').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on'); years=+b.dataset.y; render();
+});
+document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));
+  t.classList.add('on'); mode=t.dataset.mode; render();
+});
+render();
+} // end initPage
+
+loadData();
+</script>
+</body>
+</html>
