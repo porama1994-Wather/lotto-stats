@@ -44,6 +44,8 @@ h1 span{color:var(--gold)}
   display:flex;align-items:center;justify-content:center;font-family:'Prompt';font-weight:700;font-size:20px}
 .derived{display:flex;gap:16px;font-size:14px;color:var(--muted)}
 .derived b{color:var(--gold-soft);font-family:'Prompt';font-size:17px;margin-left:6px}
+.derived b.animal{font-size:15px}
+.animal-icon{font-size:26px;margin-left:8px;line-height:1;vertical-align:middle}
 
 main{max-width:1080px;margin:0 auto;padding:26px 24px 60px}
 
@@ -105,6 +107,32 @@ h2{font-size:19px;font-weight:600}
 .tri-row b{font-family:'Prompt';font-size:18px;color:var(--gold-soft)}
 .tri-row span{color:var(--muted)}
 
+/* wheels */
+.wheels-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+@media(max-width:820px){.wheels-grid{grid-template-columns:1fr}}
+.wheel-card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px;text-align:center}
+.wheel-card.stat{border-color:var(--gold)}
+.wheel-card h3{font-size:16px;font-weight:500;color:var(--gold-soft);margin-bottom:4px}
+.wheel-desc{font-size:13px;color:var(--muted);margin-bottom:16px;min-height:32px}
+.wheel-row{display:flex;align-items:center;justify-content:center;gap:18px;margin-top:14px;flex-wrap:wrap}
+.reels{display:flex;gap:16px}
+.wheel{position:relative;width:104px;height:104px;border-radius:50%;flex-shrink:0;
+  box-shadow:0 0 0 4px var(--ink), 0 0 0 6px var(--line);transition:transform 2.4s cubic-bezier(.12,.84,.24,1)}
+.wheel .digit{position:absolute;left:50%;top:50%;width:0;height:0;
+  font-family:'Prompt';font-weight:700;font-size:18px;color:#1a1200;
+  transform-origin:0 0;display:flex;align-items:flex-start;justify-content:center}
+.wheel .digit span{display:inline-block;transform:translate(-50%,4px)}
+.wheel-pointer{position:relative}
+.wheel-pointer::after{content:'';position:absolute;left:50%;top:-11px;transform:translateX(-50%);
+  width:0;height:0;border-left:9px solid transparent;border-right:9px solid transparent;
+  border-top:13px solid var(--gold-soft);z-index:2}
+.spin-btn{border:1px solid var(--gold);background:transparent;color:var(--gold-soft);
+  padding:10px 18px;border-radius:8px;font-family:'Prompt';font-size:14px;cursor:pointer;transition:.15s}
+.spin-btn:hover{background:var(--gold);color:var(--ink)}
+.spin-btn:disabled{opacity:.5;cursor:default;background:transparent;color:var(--gold-soft)}
+.wheel-result{margin-top:12px;font-family:'Prompt';font-weight:700;font-size:26px;
+  letter-spacing:4px;color:var(--gold);min-height:32px}
+
 /* prediction */
 .predict{background:linear-gradient(135deg,var(--panel) 0%, #2a2438 100%);border:1px solid var(--gold);border-radius:14px;padding:22px}
 .pset{display:flex;flex-wrap:wrap;gap:26px;margin-top:14px}
@@ -139,6 +167,7 @@ footer{border-top:1px solid var(--line);padding:18px 24px;text-align:center;colo
         <span>3 ตัวบน<b id="d3"></b></span>
         <span>2 ตัวบน<b id="d2t"></b></span>
         <span>2 ตัวล่าง<b id="d2b"></b></span>
+        <span>นามสัตว์<span id="dAnimalIcon" class="animal-icon"></span><b id="dAnimal" class="animal"></b></span>
       </div>
     </div>
   </div>
@@ -209,6 +238,48 @@ footer{border-top:1px solid var(--line);padding:18px 24px;text-align:center;colo
       <div class="disclaimer"><b>ข้อควรทราบ:</b> ผลหวยแต่ละงวดเป็นการสุ่มที่เป็นอิสระต่อกัน สถิติย้อนหลังไม่สามารถทำนายผลงวดถัดไปได้จริง ข้อมูลนี้จัดทำเพื่อความบันเทิงเท่านั้น โปรดใช้วิจารณญาณ</div>
     </div>
   </section>
+
+  <section>
+    <div class="sec-head"><h2>วงล้อสุ่มเลข</h2><small>เพื่อความสนุก ไม่ใช่การพยากรณ์ผล</small></div>
+    <div class="wheels-grid">
+
+      <div class="wheel-card">
+        <h3>วงล้อสุ่มล้วน</h3>
+        <p class="wheel-desc">สุ่มเท่ากันทุกเลข ไม่อิงสถิติใดๆ ทั้งสิ้น</p>
+
+        <div class="wheel-row">
+          <div class="reels" id="pureReels2"></div>
+          <button class="spin-btn" data-group="pure" data-digits="2">หมุน 2 ตัว</button>
+        </div>
+        <div class="wheel-result" id="pureResult2">—</div>
+
+        <div class="wheel-row">
+          <div class="reels" id="pureReels3"></div>
+          <button class="spin-btn" data-group="pure" data-digits="3">หมุน 3 ตัว</button>
+        </div>
+        <div class="wheel-result" id="pureResult3">—</div>
+      </div>
+
+      <div class="wheel-card stat">
+        <h3>วงล้อผสมสถิติ</h3>
+        <p class="wheel-desc">ถ่วงน้ำหนักตามเลขที่ออกบ่อยในช่วงปีที่เลือกไว้ด้านบน</p>
+
+        <div class="wheel-row">
+          <div class="reels" id="statReels2"></div>
+          <button class="spin-btn" data-group="stat" data-digits="2">หมุน 2 ตัว</button>
+        </div>
+        <div class="wheel-result" id="statResult2">—</div>
+
+        <div class="wheel-row">
+          <div class="reels" id="statReels3"></div>
+          <button class="spin-btn" data-group="stat" data-digits="3">หมุน 3 ตัว</button>
+        </div>
+        <div class="wheel-result" id="statResult3">—</div>
+      </div>
+
+    </div>
+    <div class="disclaimer"><b>ข้อควรทราบ:</b> แม้แต่วงล้อ "ผสมสถิติ" ก็เป็นการถ่วงน้ำหนักเพื่อความสนุกเท่านั้น ไม่ได้เพิ่มโอกาสถูกจริงในงวดที่จะออก เพราะผลหวยแต่ละงวดสุ่มใหม่อย่างเป็นอิสระเสมอ</div>
+  </section>
 </main>
 
 <footer>ตัวอย่างดีไซน์ — ข้อมูลทั้งหมดในหน้านี้เป็นข้อมูลจำลองเพื่อการออกแบบ</footer>
@@ -256,11 +327,40 @@ async function loadData(){
 }
 
 function initPage(){
+// ---------- ตารางเลขนามสัตว์หวยลาว (เลข 2 ตัว 00-99 -> ชื่อสัตว์) ----------
+// ตารางคงที่ ไม่ต้องดึงจากเว็บแยก คำนวณจากเลข 2 ตัวบนที่มีอยู่แล้วในผลแต่ละงวด
+const ANIMALS = [
+  'ตะขาบ','ปลาเล็ก','หอย','ห่าน','นกยูง','สิงโต','เสือ','หมู','กระต่าย','ควาย',
+  'นาก','สุนัข','ม้า','ช้าง','แมวบ้าน','หนู','ผึ้ง','นกกระยาง','แมวป่า','ผีเสื้อ',
+  'ตะขาบ','นกนางแอ่น','นกพิราบ','ลิง','กบ','เหยี่ยว','นาค','เต่า','ไก่','ปลาไหล',
+  'ปลาใหญ่','กุ้ง','งู','แมงมุม','กวาง','แพะ','อีเห็น','ตัวนิ่ม','เม่น','ปู',
+  'นกอินทรี','ปลาเล็ก','หอย','ห่าน','นกยูง','สิงโต','เสือ','หมู','กระต่าย','ควาย',
+  'นาก','สุนัข','ม้า','ช้าง','แมวบ้าน','หนู','ผึ้ง','นกกระยาง','แมวป่า','ผีเสื้อ',
+  'ตะขาบ','นกนางแอ่น','นกพิราบ','ลิง','กบ','เหยี่ยว','นาค','เต่า','ไก่','ปลาไหล',
+  'ปลาใหญ่','กุ้ง','งู','แมงมุม','กวาง','แพะ','อีเห็น','ตัวนิ่ม','เม่น','ปู',
+  'นกอินทรี','ปลาเล็ก','หอย','ห่าน','นกยูง','สิงโต','เสือ','หมู','กระต่าย','ควาย',
+  'นาก','สุนัข','ม้า','ช้าง','แมวบ้าน','หนู','ผึ้ง','นกกระยาง','แมวป่า','ผีเสื้อ'
+];
+function animalOf(twoDigit){ return ANIMALS[+twoDigit] ?? '—'; }
+
+// ไอคอนรูปสัตว์ (ใช้ emoji แทนรูปภาพจริง เบาและไม่ติดปัญหาลิขสิทธิ์)
+const ANIMAL_ICONS = {
+  'ตะขาบ':'🐛','ปลาเล็ก':'🐟','หอย':'🐚','ห่าน':'🦢','นกยูง':'🦚','สิงโต':'🦁','เสือ':'🐯',
+  'หมู':'🐷','กระต่าย':'🐰','ควาย':'🐃','นาก':'🦦','สุนัข':'🐶','ม้า':'🐴','ช้าง':'🐘',
+  'แมวบ้าน':'🐱','หนู':'🐭','ผึ้ง':'🐝','นกกระยาง':'🦩','แมวป่า':'🐈','ผีเสื้อ':'🦋',
+  'นกนางแอ่น':'🐦','นกพิราบ':'🕊️','ลิง':'🐒','กบ':'🐸','เหยี่ยว':'🦅','นาค':'🐉','เต่า':'🐢',
+  'ไก่':'🐔','ปลาไหล':'🐍','ปลาใหญ่':'🐋','กุ้ง':'🦐','งู':'🐍','แมงมุม':'🕷️','กวาง':'🦌',
+  'แพะ':'🐐','อีเห็น':'🦡','ตัวนิ่ม':'🐾','เม่น':'🦔','ปู':'🦀','นกอินทรี':'🦅'
+};
+function animalIconOf(name){ return ANIMAL_ICONS[name] || '❔'; }
+
 document.getElementById('latestDate').textContent = 'วัน' + ['อาทิตย์','จันทร์','อังคาร','พุธ','พฤหัสฯ','ศุกร์','เสาร์'][last.date.getDay()] + 'ที่ ' + fmt(last.date);
 document.getElementById('latestBalls').innerHTML = [...last.n4].map(c=>`<div class="ball">${c}</div>`).join('');
 document.getElementById('d3').textContent = last.top3;
 document.getElementById('d2t').textContent = last.top2;
 document.getElementById('d2b').textContent = last.low2 ?? '—';
+document.getElementById('dAnimal').textContent = animalOf(last.top2);
+document.getElementById('dAnimalIcon').textContent = animalIconOf(animalOf(last.top2));
 
 // คำนวณวันที่งวดถัดไป (หวยลาวออก จ-ศ ทุกวัน ตั้งแต่ 2 เม.ย. 2569)
 {
@@ -273,6 +373,10 @@ document.getElementById('d2b').textContent = last.low2 ?? '—';
 }
 
 let years = 5, mode = '2';
+let digitWeights = {
+  p2: [new Array(10).fill(1), new Array(10).fill(1)],
+  p3: [new Array(10).fill(1), new Array(10).fill(1), new Array(10).fill(1)]
+};
 
 function filtered(){
   const cut = new Date(end); cut.setFullYear(cut.getFullYear()-years);
@@ -294,6 +398,17 @@ function render(){
     if(x.low2!=null){ const b=+x.low2; freq2[b]++; lastSeen2[b]=i; }
     freq3[x.top3]=(freq3[x.top3]||0)+1;
   });
+
+  // ---- ความถี่รายหลัก (สำหรับวงล้อผสมสถิติ) เริ่มที่ 1 กันหารด้วยศูนย์ ----
+  const pos2 = [new Array(10).fill(1), new Array(10).fill(1)];
+  const pos3 = [new Array(10).fill(1), new Array(10).fill(1), new Array(10).fill(1)];
+  data.forEach(x=>{
+    const t2 = x.top2.padStart(2,'0');
+    pos2[0][+t2[0]]++; pos2[1][+t2[1]]++;
+    const t3 = x.top3.padStart(3,'0');
+    pos3[0][+t3[0]]++; pos3[1][+t3[1]]++; pos3[2][+t3[2]]++;
+  });
+  digitWeights = { p2: pos2, p3: pos3 };
 
   // ---- สถิติเลขเบิ้ล ----
   // 2 หลัก: นับเฉพาะ 00,11,...,99 จาก freq2
@@ -370,6 +485,96 @@ document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{
   document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));
   t.classList.add('on'); mode=t.dataset.mode; render();
 });
+
+// ---------- วงล้อสุ่มเลข ----------
+function buildWheel(){
+  const wheel = document.createElement('div');
+  wheel.className = 'wheel';
+  const stops = [];
+  for(let i=0;i<10;i++){
+    const color = i%2===0 ? 'var(--cold)' : 'var(--panel2)';
+    stops.push(`${color} ${i*36}deg ${(i+1)*36}deg`);
+  }
+  wheel.style.background = `conic-gradient(from -18deg, ${stops.join(',')})`;
+  wheel.dataset.rotation = '0';
+  for(let i=0;i<10;i++){
+    const d = document.createElement('div');
+    d.className = 'digit';
+    d.style.transform = `rotate(${i*36}deg) translate(0,-37px)`;
+    d.innerHTML = `<span>${i}</span>`;
+    wheel.appendChild(d);
+  }
+  const wrap = document.createElement('div');
+  wrap.className = 'wheel-pointer';
+  wrap.appendChild(wheel);
+  return { wrap, wheel };
+}
+
+function buildReels(containerId, count){
+  const container = document.getElementById(containerId);
+  const wheels = [];
+  for(let i=0;i<count;i++){
+    const { wrap, wheel } = buildWheel();
+    container.appendChild(wrap);
+    wheels.push(wheel);
+  }
+  return wheels;
+}
+
+const reelSets = {
+  pure2: buildReels('pureReels2', 2),
+  pure3: buildReels('pureReels3', 3),
+  stat2: buildReels('statReels2', 2),
+  stat3: buildReels('statReels3', 3),
+};
+
+function pickUniform(){ return Math.floor(Math.random()*10); }
+
+function pickWeighted(weights){
+  const total = weights.reduce((a,b)=>a+b,0);
+  let r = Math.random()*total;
+  for(let i=0;i<weights.length;i++){
+    if(r < weights[i]) return i;
+    r -= weights[i];
+  }
+  return weights.length-1;
+}
+
+function spinWheel(wheel, targetDigit){
+  const current = parseInt(wheel.dataset.rotation || '0', 10);
+  const currentMod = ((current % 360) + 360) % 360;
+  const base = (360 - targetDigit*36) % 360;
+  let delta = base - currentMod;
+  if(delta <= 0) delta += 360;
+  const turns = 4 + Math.floor(Math.random()*2); // หมุน 4-5 รอบเต็มให้ดูมีจังหวะ
+  const finalRotation = current + delta + turns*360;
+  wheel.dataset.rotation = String(finalRotation);
+  wheel.style.transform = `rotate(${finalRotation}deg)`;
+}
+
+function spinGroup(group, digits){
+  const wheels = reelSets[`${group}${digits}`];
+  const resultEl = document.getElementById(`${group}Result${digits}`);
+  document.querySelectorAll('.spin-btn').forEach(b=>b.disabled = true);
+  const picks = [];
+  for(let i=0;i<digits;i++){
+    const d = group === 'pure'
+      ? pickUniform()
+      : pickWeighted(digits === 2 ? digitWeights.p2[i] : digitWeights.p3[i]);
+    picks.push(d);
+    spinWheel(wheels[i], d);
+  }
+  resultEl.textContent = '● ● ●';
+  setTimeout(()=>{
+    resultEl.textContent = picks.join('');
+    document.querySelectorAll('.spin-btn').forEach(b=>b.disabled = false);
+  }, 2300);
+}
+
+document.querySelectorAll('.spin-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=> spinGroup(btn.dataset.group, +btn.dataset.digits));
+});
+
 render();
 } // end initPage
 
