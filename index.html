@@ -126,7 +126,7 @@ footer{border-top:1px solid var(--line);padding:18px 24px;text-align:center;colo
       <div class="moon">ລ</div>
       <div>
         <h1>สถิติหวยลาว<span>พัฒนา</span></h1>
-        <div class="sub">ข้อมูลย้อนหลัง 10 ปี · อัปเดตทุกงวด จันทร์ / พุธ / ศุกร์ (ตัวอย่างใช้ข้อมูลจำลอง)</div>
+        <div class="sub">ข้อมูลย้อนหลัง 10 ปี · อัปเดตทุกงวด จันทร์-ศุกร์ (ตัวอย่างใช้ข้อมูลจำลอง)</div>
       </div>
     </div>
     <div class="latest">
@@ -198,7 +198,7 @@ footer{border-top:1px solid var(--line);padding:18px 24px;text-align:center;colo
   </section>
 
   <section>
-    <div class="sec-head"><h2>เลขเด่นงวดต่อไป (จากสถิติ)</h2><small>งวดวันศุกร์ที่ 17 ก.ค. 2569</small></div>
+    <div class="sec-head"><h2>เลขเด่นงวดต่อไป (จากสถิติ)</h2><small id="nextDrawLabel">งวดถัดไป</small></div>
     <div class="predict">
       <div style="font-size:14px;color:var(--muted)">คำนวณจากความถี่ในช่วงที่เลือก + เลขค้างนาน + แนวโน้มเลขเด่นรายเดือน</div>
       <div class="pset">
@@ -226,7 +226,7 @@ function mockData(){
   const start = new Date(2016,6,15), fin = new Date(2026,6,13);
   for(let d=new Date(start); d<=fin; d.setDate(d.getDate()+1)){
     const dow = d.getDay();
-    if(dow===1||dow===3||dow===5){
+    if(dow>=1 && dow<=5){ // หวยลาวออก จ-ศ ทุกวัน (ตั้งแต่ 2 เม.ย. 2569); ก่อนหน้านั้นออก จ/พ/ศ เท่านั้น
       const n4 = String(Math.floor(rnd()*10000)).padStart(4,'0');
       const low2 = String(Math.floor(rnd()*100)).padStart(2,'0');
       arr.push({date:new Date(d), n4, top3:n4.slice(1), top2:n4.slice(2), low2});
@@ -246,7 +246,7 @@ async function loadData(){
     draws = raw.map(r=>({date:new Date(r.date), n4:r.n4, top3:r.top3, top2:r.top2, low2:r.low2||null}))
                .sort((a,b)=>a.date-b.date);
     document.querySelector('.sub').textContent =
-      'ข้อมูลจริงจาก results.json · อัปเดตทุกงวด จันทร์ / พุธ / ศุกร์';
+      'ข้อมูลจริงจาก results.json · อัปเดตทุกงวด จันทร์-ศุกร์';
   }catch(e){
     draws = mockData(); // fallback: ข้อมูลจำลอง
   }
@@ -261,6 +261,16 @@ document.getElementById('latestBalls').innerHTML = [...last.n4].map(c=>`<div cla
 document.getElementById('d3').textContent = last.top3;
 document.getElementById('d2t').textContent = last.top2;
 document.getElementById('d2b').textContent = last.low2 ?? '—';
+
+// คำนวณวันที่งวดถัดไป (หวยลาวออก จ-ศ ทุกวัน ตั้งแต่ 2 เม.ย. 2569)
+{
+  const next = new Date(last.date);
+  next.setDate(next.getDate() + 1);
+  while (next.getDay() === 0 || next.getDay() === 6) next.setDate(next.getDate() + 1);
+  const dayNames = ['อาทิตย์','จันทร์','อังคาร','พุธ','พฤหัสฯ','ศุกร์','เสาร์'];
+  document.getElementById('nextDrawLabel').textContent =
+    `งวดวัน${dayNames[next.getDay()]}ที่ ${fmt(next)}`;
+}
 
 let years = 5, mode = '2';
 
