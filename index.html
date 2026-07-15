@@ -133,6 +133,25 @@ h2{font-size:19px;font-weight:600}
 .wheel-result{margin-top:12px;font-family:'Prompt';font-weight:700;font-size:26px;
   letter-spacing:4px;color:var(--gold);min-height:32px}
 
+/* significance */
+.sig-pill{display:inline-flex;align-items:baseline;gap:8px;border-radius:10px;padding:8px 14px;margin:4px 6px 4px 0;
+  background:var(--panel2);border:1px solid var(--line);font-size:13px;color:var(--muted)}
+.sig-pill b{font-family:'Prompt';font-size:18px;color:var(--gold-soft)}
+.sig-pill.s99{border-color:var(--red)}
+.sig-pill.s99 b{color:#ff8f9c}
+.sig-pill.s95{border-color:var(--gold)}
+.sig-tag{font-size:11px;padding:2px 8px;border-radius:99px;font-family:'Prompt'}
+.sig-tag.t99{background:rgba(201,57,74,.2);color:#ff8f9c}
+.sig-tag.t95{background:rgba(232,182,76,.18);color:var(--gold-soft)}
+.sig-note{font-size:13px;color:var(--muted);margin-top:12px;border-top:1px dashed var(--line);padding-top:12px}
+
+/* site tabs */
+.site-tabs{display:flex;justify-content:center;background:var(--panel);border-bottom:1px solid var(--line)}
+.site-tabs a{padding:13px 30px;font-family:'Prompt';font-size:15px;color:var(--muted);text-decoration:none;
+  border-bottom:3px solid transparent;transition:.15s}
+.site-tabs a:hover{color:var(--gold-soft)}
+.site-tabs a.on{color:var(--gold);border-bottom-color:var(--gold);font-weight:600}
+
 /* prediction */
 .predict{background:linear-gradient(135deg,var(--panel) 0%, #2a2438 100%);border:1px solid var(--gold);border-radius:14px;padding:22px}
 .pset{display:flex;flex-wrap:wrap;gap:26px;margin-top:14px}
@@ -147,6 +166,11 @@ footer{border-top:1px solid var(--line);padding:18px 24px;text-align:center;colo
 </style>
 </head>
 <body>
+
+<nav class="site-tabs">
+  <a href="index.html" class="on">หวยลาวพัฒนา</a>
+  <a href="thai-lottery-stats.html">หวยรัฐบาลไทย</a>
+</nav>
 
 <header>
   <div class="wrap">
@@ -223,6 +247,15 @@ footer{border-top:1px solid var(--line);padding:18px 24px;text-align:center;colo
         <h3 style="margin-top:18px">ตองที่เคยออก (000–999)</h3>
         <div class="cold-list" id="tripleList"></div>
       </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head"><h2>การทดสอบนัยสำคัญทางสถิติ</h2><small>ระดับความเชื่อมั่น 95% (z > 1.96) และ 99% (z > 2.58)</small></div>
+    <div class="card">
+      <h3>เลข 2 หลัก ที่ออกถี่กว่าค่าคาดหมายอย่างมีนัยสำคัญ (นับจาก 2 ตัวบน + 2 ตัวล่าง)</h3>
+      <div id="sigHot"></div>
+      <div class="sig-note" id="sigExplain"></div>
     </div>
   </section>
 
@@ -469,9 +502,29 @@ function render(){
   document.getElementById('coldList').innerHTML = cold.map(([n,g])=>
     `<span class="cold-pill"><b>${String(n).padStart(2,'0')}</b>ไม่ออก ${g} งวด</span>`).join('');
 
-  // "prediction" = top hot + top cold
-  const hot2 = ranked === null ? [] : freq2.map((c,n)=>[String(n).padStart(2,'0'),c]).sort((a,b)=>b[1]-a[1]);
-  document.getElementById('p2').innerHTML = hot2.slice(0,3).map(x=>`<span class="pn">${x[0]}</span>`).join('');
+  // ---- นัยสำคัญทางสถิติ (เลข 2 หลัก, p = 1/100 ต่อ 1 การนับ) ----
+  // nObs = จำนวนการนับทั้งหมด (2 ตัวบน + 2 ตัวล่าง; งวดที่ไม่มี 2 ตัวล่างนับ 1)
+  const nObs = freq2.reduce((s,x)=>s+x,0);
+  function zScore(count, n, p){
+    const mu = n*p, sd = Math.sqrt(n*p*(1-p));
+    return sd > 0 ? (count-mu)/sd : 0;
+  }
+  const sig = freq2.map((c,v)=>({v:String(v).padStart(2,'0'), c, z:zScore(c,nObs,0.01)}))
+    .filter(x=>x.z>1.96).sort((a,b)=>b.z-a.z);
+  const s99 = sig.filter(x=>x.z>2.576);
+  const s95 = sig.filter(x=>x.z<=2.576);
+  document.getElementById('sigHot').innerHTML =
+    (s99.length ? s99.map(x=>`<span class="sig-pill s99"><b>${x.v}</b> ${x.c} ครั้ง · z=${x.z.toFixed(2)} <span class="sig-tag t99">99%</span></span>`).join('') : '') +
+    (s95.length ? s95.map(x=>`<span class="sig-pill s95"><b>${x.v}</b> ${x.c} ครั้ง · z=${x.z.toFixed(2)} <span class="sig-tag t95">95%</span></span>`).join('') : '') +
+    (!sig.length ? `<div style="color:var(--muted);font-size:14px">ช่วงที่เลือกไม่มีเลขใดออกถี่เกินเกณฑ์ 95% — สอดคล้องกับการสุ่มสมบูรณ์</div>` : '');
+  document.getElementById('sigExplain').textContent =
+    `ค่าคาดหมายของแต่ละเลขในช่วงนี้ = ${(nObs*0.01).toFixed(1)} ครั้ง (จากการนับ ${nObs.toLocaleString()} ครั้ง × โอกาส 1/100) — เกณฑ์ 95% คือออกถี่จนโอกาสเกิดโดยบังเอิญ < 5% (z > 1.96) และเกณฑ์ 99% คือ < 1% (z > 2.58) · โปรดระวัง: ทดสอบ 100 เลขพร้อมกันย่อมมี ~5 เลขผ่านเกณฑ์ 95% โดยบังเอิญเสมอ และนัยสำคัญในอดีตไม่ได้ทำนายงวดถัดไป`;
+
+  // "prediction" = เลขผ่านเกณฑ์นัยสำคัญก่อน ถ้าไม่มีใช้ top ความถี่ + top cold
+  const hot2 = freq2.map((c,n)=>[String(n).padStart(2,'0'),c]).sort((a,b)=>b[1]-a[1]);
+  document.getElementById('p2').innerHTML =
+    (sig.length ? sig.slice(0,3).map(x=>x.v) : hot2.slice(0,3).map(x=>x[0]))
+    .map(v=>`<span class="pn">${v}</span>`).join('');
   const hot3 = Object.entries(freq3).sort((a,b)=>b[1]-a[1]).slice(0,2);
   document.getElementById('p3').innerHTML = hot3.map(x=>`<span class="pn">${x[0]}</span>`).join('');
   document.getElementById('pc').innerHTML = cold.slice(0,2).map(x=>`<span class="pn">${String(x[0]).padStart(2,'0')}</span>`).join('');
