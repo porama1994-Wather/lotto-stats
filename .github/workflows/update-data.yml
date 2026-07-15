@@ -26,10 +26,13 @@ jobs:
       - name: Fetch latest results
         run: python fetch_lao_lottery.py --merge results.json --out results.json
 
+      - name: Fetch Thai lottery results
+        run: python fetch_thai_lottery.py --merge results_thai.json --out results_thai.json
+
       - name: Commit updated data
         run: |
           git config user.name "lotto-bot"
           git config user.email "bot@users.noreply.github.com"
-          git add results.json
+          git add results.json results_thai.json
           git diff --cached --quiet || git commit -m "update results $(date +'%Y-%m-%d')"
           git push
