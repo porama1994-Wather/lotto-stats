@@ -78,6 +78,7 @@ h2{font-size:19px;font-weight:600}
   font-family:'Prompt';font-size:11px;font-weight:500;cursor:default;position:relative}
 .cell:hover::after{content:attr(data-tip);position:absolute;bottom:110%;left:50%;transform:translateX(-50%);
   background:#000;color:#fff;font-size:11px;padding:4px 8px;border-radius:6px;white-space:nowrap;z-index:5}
+.cell.c3{font-size:9.5px;letter-spacing:.3px}
 .legend{display:flex;align-items:center;gap:8px;margin-top:12px;font-size:12px;color:var(--muted)}
 .lg-bar{flex:1;height:8px;border-radius:4px;background:linear-gradient(90deg,var(--cold),var(--gold))}
 
@@ -144,6 +145,18 @@ h2{font-size:19px;font-weight:600}
 .sig-tag.t99{background:rgba(201,57,74,.2);color:#ff8f9c}
 .sig-tag.t95{background:rgba(232,182,76,.18);color:var(--gold-soft)}
 .sig-note{font-size:13px;color:var(--muted);margin-top:12px;border-top:1px dashed var(--line);padding-top:12px}
+
+/* hot picker */
+.pick-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+@media(max-width:820px){.pick-grid{grid-template-columns:1fr}}
+.pick-card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px;text-align:center}
+.pick-num{font-family:'Prompt';font-weight:700;font-size:44px;letter-spacing:6px;color:var(--gold);min-height:60px;margin:10px 0 4px}
+.pick-stats{display:flex;flex-direction:column;gap:7px;margin:12px 0;font-size:13.5px;color:var(--muted);text-align:left}
+.pick-stats .ps{display:flex;justify-content:space-between;border-bottom:1px dashed var(--line);padding-bottom:6px}
+.pick-stats .ps b{font-family:'Prompt';color:var(--gold-soft)}
+.pick-status{display:inline-block;font-size:12.5px;font-family:'Prompt';padding:4px 14px;border-radius:99px;margin-bottom:10px}
+.pick-status.due{background:rgba(201,57,74,.18);color:#ff8f9c;border:1px solid var(--red)}
+.pick-status.wait{background:rgba(232,182,76,.14);color:var(--gold-soft);border:1px solid var(--line)}
 
 /* site tabs */
 .site-tabs{display:flex;justify-content:center;background:var(--panel);border-bottom:1px solid var(--line)}
@@ -216,7 +229,7 @@ footer{border-top:1px solid var(--line);padding:18px 24px;text-align:center;colo
 
     <div class="grid2">
       <div class="card" id="heatCard">
-        <h3>แผนที่ความถี่ เลข 00–99</h3>
+        <h3 id="heatTitle">แผนที่ความถี่ เลข 00–99</h3>
         <div class="heat" id="heat"></div>
         <div class="legend"><span>ออกน้อย</span><div class="lg-bar"></div><span>ออกบ่อย</span></div>
       </div>
@@ -226,7 +239,7 @@ footer{border-top:1px solid var(--line);padding:18px 24px;text-align:center;colo
           <div class="rank" id="rank"></div>
         </div>
         <div class="card">
-          <h3>เลขที่หายไปนานที่สุด (เลขค้าง)</h3>
+          <h3 id="coldTitle">เลขที่หายไปนานที่สุด (เลขค้าง)</h3>
           <div class="cold-list" id="coldList"></div>
         </div>
       </div>
@@ -312,6 +325,30 @@ footer{border-top:1px solid var(--line);padding:18px 24px;text-align:center;colo
 
     </div>
     <div class="disclaimer"><b>ข้อควรทราบ:</b> แม้แต่วงล้อ "ผสมสถิติ" ก็เป็นการถ่วงน้ำหนักเพื่อความสนุกเท่านั้น ไม่ได้เพิ่มโอกาสถูกจริงในงวดที่จะออก เพราะผลหวยแต่ละงวดสุ่มใหม่อย่างเป็นอิสระเสมอ</div>
+  </section>
+
+  <section>
+    <div class="sec-head"><h2>สุ่มเลขจากกลุ่มออกบ่อย + รอบความถี่</h2><small>สุ่มจาก TOP ความถี่ในช่วงปีที่เลือก พร้อมข้อมูลว่าเฉลี่ยกี่งวดออกครั้ง</small></div>
+    <div class="pick-grid">
+
+      <div class="pick-card">
+        <h3 style="font-family:'Prompt';font-size:15px;font-weight:500;color:var(--gold-soft)">เลข 2 ตัว</h3>
+        <div class="pick-num" id="pick2Num">--</div>
+        <div id="pick2Status"></div>
+        <div class="pick-stats" id="pick2Stats"></div>
+        <button class="spin-btn" id="pick2Btn">สุ่มเลข 2 ตัว</button>
+      </div>
+
+      <div class="pick-card">
+        <h3 style="font-family:'Prompt';font-size:15px;font-weight:500;color:var(--gold-soft)">เลข 3 ตัว</h3>
+        <div class="pick-num" id="pick3Num">---</div>
+        <div id="pick3Status"></div>
+        <div class="pick-stats" id="pick3Stats"></div>
+        <button class="spin-btn" id="pick3Btn">สุ่มเลข 3 ตัว</button>
+      </div>
+
+    </div>
+    <div class="disclaimer"><b>ข้อควรทราบ:</b> "รอบเฉลี่ย" เป็นค่าบรรยายอดีตเท่านั้น การที่เลขใด "เกินรอบเฉลี่ย" มาแล้วไม่ได้ทำให้งวดหน้ามีโอกาสออกมากขึ้นจริง (ความเข้าใจผิดแบบนี้เรียกว่า Gambler's Fallacy) โปรดใช้เพื่อความบันเทิงเท่านั้น</div>
   </section>
 </main>
 
@@ -406,6 +443,7 @@ document.getElementById('dAnimalIcon').textContent = animalIconOf(animalOf(last.
 }
 
 let years = 5, mode = '2';
+let pickPool2 = [], pickPool3 = [], nDraws = 0;
 let digitWeights = {
   p2: [new Array(10).fill(1), new Array(10).fill(1)],
   p3: [new Array(10).fill(1), new Array(10).fill(1), new Array(10).fill(1)]
@@ -425,11 +463,13 @@ function render(){
   const freq2 = new Array(100).fill(0);
   const freq3 = {};
   const lastSeen2 = new Array(100).fill(null);
+  const lastSeen3 = {};
   data.forEach((x,i)=>{
     const a=+x.top2;
     freq2[a]++; lastSeen2[a]=i;
     if(x.low2!=null){ const b=+x.low2; freq2[b]++; lastSeen2[b]=i; }
     freq3[x.top3]=(freq3[x.top3]||0)+1;
+    lastSeen3[x.top3]=i;
   });
 
   // ---- ความถี่รายหลัก (สำหรับวงล้อผสมสถิติ) เริ่มที่ 1 กันหารด้วยศูนย์ ----
@@ -473,14 +513,28 @@ function render(){
     ? tripleArr.map(([n,c])=>`<span class="cold-pill"><b>${n}</b>${c} ครั้ง</span>`).join('')
     : `<span class="cold-pill">ยังไม่เคยออกตองในช่วงที่เลือก</span>`;
 
-  // heatmap (2 หลักเสมอ)
-  const max2=Math.max(...freq2), min2=Math.min(...freq2);
-  document.getElementById('heat').innerHTML = freq2.map((f,n)=>{
-    const t=(f-min2)/(max2-min2||1);
-    const bg=`color-mix(in srgb, var(--gold) ${Math.round(t*85)}%, var(--cold))`;
-    const col=t>.55?'var(--ink)':'var(--muted)';
-    return `<div class="cell" style="background:${bg};color:${col}" data-tip="เลข ${String(n).padStart(2,'0')} ออก ${f} ครั้ง">${String(n).padStart(2,'0')}</div>`;
-  }).join('');
+  // heatmap: โหมด 2 หลัก = ตาราง 00-99 ครบทุกเลข, โหมด 3 หลัก = TOP 100 เลขที่ออกบ่อยสุด
+  if(mode==='2'){
+    document.getElementById('heatTitle').textContent = 'แผนที่ความถี่ เลข 00–99';
+    const max2=Math.max(...freq2), min2=Math.min(...freq2);
+    document.getElementById('heat').innerHTML = freq2.map((f,n)=>{
+      const t=(f-min2)/(max2-min2||1);
+      const bg=`color-mix(in srgb, var(--gold) ${Math.round(t*85)}%, var(--cold))`;
+      const col=t>.55?'var(--ink)':'var(--muted)';
+      return `<div class="cell" style="background:${bg};color:${col}" data-tip="เลข ${String(n).padStart(2,'0')} ออก ${f} ครั้ง">${String(n).padStart(2,'0')}</div>`;
+    }).join('');
+  }else{
+    document.getElementById('heatTitle').textContent = 'แผนที่ความถี่ เลข 3 หลัก — TOP 100 ที่ออกบ่อยสุด';
+    const top100 = Object.entries(freq3).sort((a,b)=>b[1]-a[1] || a[0].localeCompare(b[0])).slice(0,100);
+    const maxF = top100.length ? top100[0][1] : 1;
+    const minF = top100.length ? top100[top100.length-1][1] : 0;
+    document.getElementById('heat').innerHTML = top100.map(([num,f])=>{
+      const t=(f-minF)/(maxF-minF||1);
+      const bg=`color-mix(in srgb, var(--gold) ${Math.round(t*85)}%, var(--cold))`;
+      const col=t>.55?'var(--ink)':'var(--muted)';
+      return `<div class="cell c3" style="background:${bg};color:${col}" data-tip="เลข ${num} ออก ${f} ครั้ง">${num}</div>`;
+    }).join('');
+  }
 
   // ranking
   let ranked;
@@ -496,11 +550,21 @@ function render(){
     `<div class="rrow"><span class="pos">${i+1}.</span><span class="n">${n}</span>
      <div class="bar" style="width:${Math.round(c/rmax*100)}%"></div><span class="c">${c} ครั้ง</span></div>`).join('');
 
-  // cold numbers (เลขค้าง 2 หลัก)
+  // cold numbers (เลขค้าง) — สลับตามแท็บ 2/3 หลัก
   const cold = lastSeen2.map((idx,n)=>[n, idx===null?data.length:(data.length-1-idx)])
     .sort((a,b)=>b[1]-a[1]).slice(0,8);
-  document.getElementById('coldList').innerHTML = cold.map(([n,g])=>
-    `<span class="cold-pill"><b>${String(n).padStart(2,'0')}</b>ไม่ออก ${g} งวด</span>`).join('');
+  if(mode==='2'){
+    document.getElementById('coldTitle').textContent = 'เลข 2 หลัก ที่หายไปนานที่สุด (เลขค้าง)';
+    document.getElementById('coldList').innerHTML = cold.map(([n,g])=>
+      `<span class="cold-pill"><b>${String(n).padStart(2,'0')}</b>ไม่ออก ${g} งวด</span>`).join('');
+  }else{
+    document.getElementById('coldTitle').textContent = 'เลข 3 หลัก ที่เคยออกแต่หายไปนานที่สุด';
+    const cold3 = Object.keys(lastSeen3).map(k=>[k, data.length-1-lastSeen3[k]])
+      .sort((a,b)=>b[1]-a[1]).slice(0,8);
+    document.getElementById('coldList').innerHTML = cold3.length
+      ? cold3.map(([k,g])=>`<span class="cold-pill"><b>${k}</b>ไม่ออก ${g} งวด</span>`).join('')
+      : `<span class="cold-pill">ไม่มีข้อมูลในช่วงที่เลือก</span>`;
+  }
 
   // ---- นัยสำคัญทางสถิติ (เลข 2 หลัก, p = 1/100 ต่อ 1 การนับ) ----
   // nObs = จำนวนการนับทั้งหมด (2 ตัวบน + 2 ตัวล่าง; งวดที่ไม่มี 2 ตัวล่างนับ 1)
@@ -519,6 +583,21 @@ function render(){
     (!sig.length ? `<div style="color:var(--muted);font-size:14px">ช่วงที่เลือกไม่มีเลขใดออกถี่เกินเกณฑ์ 95% — สอดคล้องกับการสุ่มสมบูรณ์</div>` : '');
   document.getElementById('sigExplain').textContent =
     `ค่าคาดหมายของแต่ละเลขในช่วงนี้ = ${(nObs*0.01).toFixed(1)} ครั้ง (จากการนับ ${nObs.toLocaleString()} ครั้ง × โอกาส 1/100) — เกณฑ์ 95% คือออกถี่จนโอกาสเกิดโดยบังเอิญ < 5% (z > 1.96) และเกณฑ์ 99% คือ < 1% (z > 2.58) · โปรดระวัง: ทดสอบ 100 เลขพร้อมกันย่อมมี ~5 เลขผ่านเกณฑ์ 95% โดยบังเอิญเสมอ และนัยสำคัญในอดีตไม่ได้ทำนายงวดถัดไป`;
+
+  // ---- กลุ่มเลขออกบ่อยสำหรับ "สุ่มเลข + รอบความถี่" (นับแบบรายงวด) ----
+  nDraws = data.length;
+  const dw2 = new Array(100).fill(0), li2 = new Array(100).fill(-1);
+  const dw3 = {}, li3 = {};
+  data.forEach((x,i)=>{
+    const hit = new Set([+x.top2]);
+    if(x.low2!=null) hit.add(+x.low2);
+    hit.forEach(v=>{ dw2[v]++; li2[v]=i; });
+    dw3[x.top3]=(dw3[x.top3]||0)+1; li3[x.top3]=i;
+  });
+  pickPool2 = dw2.map((c,v)=>({num:String(v).padStart(2,'0'), c, avg:c?nDraws/c:Infinity, since:li2[v]>=0?nDraws-1-li2[v]:nDraws}))
+    .filter(x=>x.c>0).sort((a,b)=>b.c-a.c).slice(0,15);
+  pickPool3 = Object.keys(dw3).map(k=>({num:k, c:dw3[k], avg:nDraws/dw3[k], since:nDraws-1-li3[k]}))
+    .sort((a,b)=>b.c-a.c).slice(0,20);
 
   // "prediction" = เลขผ่านเกณฑ์นัยสำคัญก่อน ถ้าไม่มีใช้ top ความถี่ + top cold
   const hot2 = freq2.map((c,n)=>[String(n).padStart(2,'0'),c]).sort((a,b)=>b[1]-a[1]);
@@ -626,6 +705,34 @@ function spinGroup(group, digits){
 
 document.querySelectorAll('.spin-btn').forEach(btn=>{
   btn.addEventListener('click', ()=> spinGroup(btn.dataset.group, +btn.dataset.digits));
+});
+
+// ---------- สุ่มเลขจากกลุ่มออกบ่อย ----------
+function pickFromPool(pool){
+  // ถ่วงน้ำหนักตามจำนวนครั้งที่ออก
+  const total = pool.reduce((s,x)=>s+x.c,0);
+  let r = Math.random()*total;
+  for(const item of pool){ if(r < item.c) return item; r -= item.c; }
+  return pool[pool.length-1];
+}
+
+function renderPick(prefix, item){
+  document.getElementById(prefix+'Num').textContent = item.num;
+  const due = item.since >= item.avg;
+  document.getElementById(prefix+'Status').innerHTML = due
+    ? `<span class="pick-status due">เกินรอบเฉลี่ยแล้ว ${(item.since-item.avg).toFixed(0)} งวด</span>`
+    : `<span class="pick-status wait">อีก ~${Math.ceil(item.avg-item.since)} งวดถึงรอบเฉลี่ย</span>`;
+  document.getElementById(prefix+'Stats').innerHTML = `
+    <div class="ps"><span>ออกในช่วงที่เลือก</span><b>${item.c} งวด จาก ${nDraws.toLocaleString()}</b></div>
+    <div class="ps"><span>รอบเฉลี่ย (ในอดีต)</span><b>ทุก ~${item.avg.toFixed(1)} งวด</b></div>
+    <div class="ps"><span>ห่างจากครั้งล่าสุด</span><b>${item.since} งวด</b></div>`;
+}
+
+document.getElementById('pick2Btn').addEventListener('click', ()=>{
+  if(pickPool2.length) renderPick('pick2', pickFromPool(pickPool2));
+});
+document.getElementById('pick3Btn').addEventListener('click', ()=>{
+  if(pickPool3.length) renderPick('pick3', pickFromPool(pickPool3));
 });
 
 render();
