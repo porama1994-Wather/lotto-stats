@@ -687,7 +687,7 @@ function spinWheel(wheel, targetDigit){
 function spinGroup(group, digits){
   const wheels = reelSets[`${group}${digits}`];
   const resultEl = document.getElementById(`${group}Result${digits}`);
-  document.querySelectorAll('.spin-btn').forEach(b=>b.disabled = true);
+  document.querySelectorAll('.spin-btn[data-group]').forEach(b=>b.disabled = true);
   const picks = [];
   for(let i=0;i<digits;i++){
     const d = group === 'pure'
@@ -699,11 +699,11 @@ function spinGroup(group, digits){
   resultEl.textContent = '● ● ●';
   setTimeout(()=>{
     resultEl.textContent = picks.join('');
-    document.querySelectorAll('.spin-btn').forEach(b=>b.disabled = false);
+    document.querySelectorAll('.spin-btn[data-group]').forEach(b=>b.disabled = false);
   }, 2300);
 }
 
-document.querySelectorAll('.spin-btn').forEach(btn=>{
+document.querySelectorAll('.spin-btn[data-group]').forEach(btn=>{
   btn.addEventListener('click', ()=> spinGroup(btn.dataset.group, +btn.dataset.digits));
 });
 
